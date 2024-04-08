@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="checkbox" class="block" title="Транспорт">
+    <form action="/" method="post">
+    <label for="checkbox">Change dirrection:</label>
+    <input type="checkbox" id="checkbox" name="checkbox">
+    <br>
+    <input type="submit" value="Submit">
+    </form>
+    Amsterdam, Kronenburg, to {{dict_result['route']}}<br>
+    {% for route in dict_result['direction'] %}
+            {{route}}
+    {% endfor %}
+    </div>
+<div class="block" title="Погода">
+    Today <br>Temperature: {{dict_result['weather']['today_forecast']['feeltemperature']}}
+    Rain: {{dict_result['weather']['today_forecast']['rainchance']}}
+    Wind: {{dict_result['weather']['today_forecast']['windforce']}}<br>
+    Tommorrow <br>Maxtemp: {{dict_result['weather']['tomorrow_forecast']['maxtemp']}}
+    Rain: {{dict_result['weather']['tomorrow_forecast']['rainchance']}}
+    Wind: {{dict_result['weather']['tomorrow_forecast']['windforce']}}
+</div>
+<div class="block">Today is {{dict_result['activity']['day']}}<br>
+    {% for day_schedule in dict_result['activity']['activity'] %}
+            {{day_schedule}}
+    {% endfor %}
+</div>
+<div class="block">Блок 4</div>
+{% endblock %}
