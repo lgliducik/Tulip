@@ -8,3 +8,5 @@ mydb = client["tulip"]
 
 # Create or access a collection (similar to a table in SQL databases)
 mycol = mydb["schedule"]
+
+todotable = mydb["todo"]

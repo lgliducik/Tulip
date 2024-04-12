@@ -3,6 +3,7 @@ import googlemaps
 from weather import get_buienradar_weather
 from datetime import datetime
 from database import mycol
+from database import todotable
 import os
 from dotenv import load_dotenv
 
@@ -22,7 +23,9 @@ gmaps = googlemaps.Client(key=api_key)
 def get_dict_trams(directions_res):
     dict_trams = {}
     for route in directions_res[0]['legs']:
-        dict_trams[route['steps'][0]['transit_details']['line']['short_name']] = route['departure_time']['text']
+        print(route)
+        # print(route.get('steps')[0])
+        dict_trams[route.get('steps')[1]['transit_details']['line']['short_name']] = route['departure_time']['text']
     return dict_trams
 
 
@@ -51,12 +54,33 @@ def get_activity(weekday):
         result = mycol.find_one({"day": "monday"})
     elif weekday == 1:
         result = mycol.find_one({"day": "tuesday"})
+    elif weekday == 2:
+        result = mycol.find_one({"day": "wednesday"})
+    elif weekday == 3:
+        result = mycol.find_one({"day": "thursday"})
+    elif weekday == 4:
+        result = mycol.find_one({"day": "friday"})
+    elif weekday == 5:
+        result = mycol.find_one({"day": "saturday"})
+    elif weekday == 6:
+        result = mycol.find_one({"day": "sunday"})
     return result
+
+
+def add_new_task_to_db(task):
+    new_task = {'task_name': task, 'status': 0}
+    todotable.insert_one(new_task)
+    return True
 
 
 @app.route('/', methods=['GET', 'POST'])
 def home_page():
     dict_result = {}
+
+    print("!!!!!!!!!!!")
+    tasks = [{'task_name': i.get('task_name'), 'status': i.get('status')} for i in todotable.find()]
+    print(tasks)
+    dict_result['tasks'] = tasks
 
     weather = get_buienradar_weather()
     dict_result['weather'] = weather
@@ -73,9 +97,17 @@ def home_page():
 
     if request.method == 'POST':
         print("POST")
+        print(request.form)
         checkbox_value = request.form.get('checkbox')
         print(request.form)
         print("checkbox_value = ", checkbox_value)
+
+        new_task = request.form.get('texttodo')
+        print(request.form)
+        if new_task:
+            if add_new_task_to_db(new_task):
+                dict_result["status_todo"] = "Задача добавлена"
+
         if checkbox_value == "on":
             direction_result = direction("center")
             dict_result['direction'] = direction_result

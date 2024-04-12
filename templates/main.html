@@ -25,5 +25,18 @@
             {{day_schedule}}
     {% endfor %}
 </div>
-<div class="block">Блок 4</div>
+<div class="block">
+    <form action="/" method="post">
+    {% for task in dict_result['tasks'] %}
+    {{ task.task_name }} <input type="checkbox" id="checkbox_task_{{ task.id }}" name="checkbox_task_{{ task.id }}[]" action="/" method="post">  <br>
+    {% endfor %}
+
+    {{ dict_result['status_todo'] }}
+
+    Add task:
+    <input type="text" id="texttodo" name="texttodo">
+    <br>
+    <input type="submit" value="Add task">
+    </form>
+</div>
 {% endblock %}
