@@ -24,11 +24,12 @@
     {% for day_schedule in dict_result['activity']['activity'] %}
             {{day_schedule}}
     {% endfor %}
+    <br><a href={{ url_for("update") }} >Change schedule</a>
 </div>
 <div class="block">
     <form action="/" method="post">
     {% for task in dict_result['tasks'] %}
-    {{ task.task_name }} <input type="checkbox" id="checkbox_task_{{ task.id }}" name="checkbox_task_{{ task.id }}[]" action="/" method="post">  <br>
+    {{ task.task_name }} <input type="checkbox" id="checkbox_task_{{ task.id }}" name="checkbox_task_{{ task.id }}[]">  <br>
     {% endfor %}
 
     {{ dict_result['status_todo'] }}

@@ -7,7 +7,7 @@ mydict = [{"day": "monday", "activity": ["школа 8:30 - 14:45", "гимна�
           {"day": "thursday", "activity": ["школа 8:30 - 14:45", "минимайкеры 14:45 - 15:45", "русский 18:00 - 19:00"]},
           {"day": "friday", "activity": ["школа 8:30 - 12:15", "гимнастика 16:00 - 18:00"]},
           {"day": "saturday", "activity": []},
-          {"day": "sanday", "activity": []}]
+          {"day": "sunday", "activity": []}]
 
 # Insert the document into the collection
 for day in mydict:

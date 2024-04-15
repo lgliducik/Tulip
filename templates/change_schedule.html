@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Schedule</h1>
+<form method="POST" action="{{ url_for('update') }}">
+{{ form.csrf_token }}
+    <p>
+        {{ form.monday.label }}<br>
+        {{ form.monday(size=32) }}
+    </p>
+    <p>
+        {{ form.tuesday.label }}<br>
+        {{ form.tuesday(size=32) }}
+    </p>
+    <p>
+        {{ form.wednesday.label }}<br>
+        {{ form.wednesday(size=32) }}
+    </p>
+    <p>
+        {{ form.thursday.label }}<br>
+        {{ form.thursday(size=32) }}
+    </p>
+    <p>
+        {{ form.friday.label }}<br>
+        {{ form.friday(size=32) }}
+    </p>
+    <p>
+        {{ form.saturday.label }}<br>
+        {{ form.saturday(size=32) }}
+    </p>
+    <p>
+        {{ form.sunday.label }}<br>
+        {{ form.sunday(size=32) }}
+    </p>
+    <p>
+    <input type="submit" value="Schedule">
+    </p>
+</form>
+{% endblock %}
