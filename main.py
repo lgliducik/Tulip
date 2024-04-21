@@ -8,6 +8,7 @@ import os
 from dotenv import load_dotenv
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField
+from bson import ObjectId
 
 
 app = Flask(__name__)
@@ -27,20 +28,19 @@ csrf = CSRFProtect(app)
 
 
 class ScheduleForm(FlaskForm):
-    monday = StringField('monday', default="".join(mycol.find_one({"day": "monday"})["activity"]))
-    tuesday = StringField('tuesday', default="".join(mycol.find_one({"day": "tuesday"})["activity"]))
-    wednesday = StringField('wednesday', default="".join(mycol.find_one({"day": "wednesday"})["activity"]))
-    thursday = StringField('thursday', default="".join(mycol.find_one({"day": "thursday"})["activity"]))
-    friday = StringField('friday', default="".join(mycol.find_one({"day": "friday"})["activity"]))
-    saturday = StringField('saturday', default="".join(mycol.find_one({"day": "saturday"})["activity"]))
-    sunday = StringField('sunday', default="".join(mycol.find_one({"day": "sunday"})["activity"]))
+    monday = StringField('monday')
+    tuesday = StringField('tuesday')
+    wednesday = StringField('wednesday')
+    thursday = StringField('thursday')
+    friday = StringField('friday')
+    saturday = StringField('saturday')
+    sunday = StringField('sunday')
 
 
 @app.route('/update/', methods=['GET', 'POST'])
 def update():
     form = ScheduleForm()
 
-    print(form.monday)
     if request.method == 'POST' and form.validate():
 
         monday = form.monday.data
@@ -50,6 +50,8 @@ def update():
         friday = form.friday.data
         saturday = form.saturday.data
         sunday = form.sunday.data
+        print(sunday)
+        print(sunday.split(", "))
 
         mydict = [{"day": "monday", "activity": monday.split(", ")},
                   {"day": "tuesday", "activity": tuesday.split(", ")},
@@ -66,8 +68,17 @@ def update():
             mycol.update_one(weekday, new_values)
 
         return redirect("/")
+    if request.method == 'GET':
+        form = ScheduleForm()
+        form.monday.process_data("".join(mycol.find_one({"day": "monday"})["activity"]))
+        form.tuesday.process_data("".join(mycol.find_one({"day": "tuesday"})["activity"]))
+        form.wednesday.process_data("".join(mycol.find_one({"day": "wednesday"})["activity"]))
+        form.thursday.process_data("".join(mycol.find_one({"day": "thursday"})["activity"]))
+        form.friday.process_data("".join(mycol.find_one({"day": "friday"})["activity"]))
+        form.saturday.process_data("".join(mycol.find_one({"day": "saturday"})["activity"]))
+        form.sunday.process_data("".join(mycol.find_one({"day": "sunday"})["activity"]))
 
-    return render_template('change_schedule.html', form=form)
+        return render_template('change_schedule.html', form=form)
 
 
 def get_dict_trams(directions_res):
@@ -123,11 +134,26 @@ def add_new_task_to_db(task):
     return True
 
 
+@app.route('/update_task', methods=['POST'])
+def update_task():
+    task_id = request.json['params']['task_id']
+    print(task_id)
+    status = todotable.find_one({"_id": ObjectId(task_id)})["status"]
+    print(status)
+    print(not status)
+
+    filter_id = {'_id': ObjectId(task_id)}
+    new_values = {"$set": {'status': int(not status)}}
+    print(new_values)
+    todotable.update_one(filter_id, new_values)
+    return redirect("/")
+
+
 @app.route('/', methods=['GET', 'POST'])
 def home_page():
     dict_result = {}
 
-    tasks = [{'task_name': i.get('task_name'), 'status': i.get('status')} for i in todotable.find()]
+    tasks = [{'task_name': i.get('task_name'), 'status': i.get('status'), 'id': i['_id']} for i in todotable.find()]
     print(tasks)
     dict_result['tasks'] = tasks
 
@@ -140,30 +166,23 @@ def home_page():
     dict_result['activity'] = result_activity
 
     direction_result = direction("center")
-    dict_result['direction'] = direction_result
-    dict_result['route'] = "center"
+    dict_result['direction_center'] = direction_result
+    print("".join(direction_result))
+
+    direction_result = direction("")
+    dict_result['direction_westwijk'] = direction_result
+    print("".join(direction_result))
     print("".join(direction_result))
 
     if request.method == 'POST':
-        checkbox_value = request.form.get('checkbox')
+        print(request.form)
 
         new_task = request.form.get('texttodo')
         if new_task:
             if add_new_task_to_db(new_task):
                 dict_result["status_todo"] = "Задача добавлена"
 
-        if checkbox_value == "on":
-            direction_result = direction("center")
-            dict_result['direction'] = direction_result
-            dict_result['route'] = "center"
-            print("".join(direction_result))
-            return render_template('main.html', dict_result=dict_result)
-        else:
-            direction_result = direction("")
-            dict_result['direction'] = direction_result
-            print("".join(direction_result))
-            dict_result['route'] = "westwijk"
-            return render_template('main.html', dict_result=dict_result)
+        return render_template('main.html', dict_result=dict_result)
 
     if request.method == 'GET':
         print("GET")

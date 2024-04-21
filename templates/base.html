@@ -21,6 +21,10 @@ initial-scale=1, shrink-to-fit=no">
         line-height: 1.5;
     }
 </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+    <script>axios.defaults.headers.common["X-CSRFToken"] = "{{ csrf_token() }}";</script>
+    <script src={{ url_for('static', filename='script.js') }}></script>
+
 <title>
 {% block title %}
 Мой сайт

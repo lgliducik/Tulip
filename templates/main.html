@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 <div id="checkbox" class="block" title="Транспорт">
-    <form action="/" method="post">
-    <label for="checkbox">Change dirrection:</label>
-    <input type="checkbox" id="checkbox" name="checkbox">
+    Amsterdam, Kronenburg, to Center<br>
+    {% for route in dict_result['direction_center'] %}
+            {{route}}
+    {% endfor %}
     <br>
-    <input type="submit" value="Submit">
-    </form>
-    Amsterdam, Kronenburg, to {{dict_result['route']}}<br>
-    {% for route in dict_result['direction'] %}
+    Amsterdam, Kronenburg, to Westwijk<br>
+    {% for route in dict_result['direction_westwijk'] %}
             {{route}}
     {% endfor %}
     </div>
@@ -29,7 +28,15 @@
 <div class="block">
     <form action="/" method="post">
     {% for task in dict_result['tasks'] %}
-    {{ task.task_name }} <input type="checkbox" id="checkbox_task_{{ task.id }}" name="checkbox_task_{{ task.id }}[]">  <br>
+    {{ task.task_name }}
+        {% if task.status == 1 %}
+
+        <input type="checkbox" onclick="myFunction('{{ task.id }}')" id="checkbox_task_{{ task.id }}" name="checkbox_task_{{ task.id }}"  checked=true>  <br>
+        {% else %}
+        <input type="checkbox" onclick="myFunction('{{ task.id }}')" id="checkbox_task_{{ task.id }}" name="checkbox_task_{{ task.id }}">  <br>
+        {% endif %}
+
+
     {% endfor %}
 
     {{ dict_result['status_todo'] }}
